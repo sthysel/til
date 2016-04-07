@@ -6,6 +6,8 @@ g.
 
 # general
 
+I want to                               | tell vim
+---                                     | ---
 delete buffer                           | :bd <text>
 select                                  | v                                    
 select row(s)                           | SHIFT + v                            

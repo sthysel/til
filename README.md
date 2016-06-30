@@ -31,7 +31,6 @@ git remote add origin git@github.com:sthysel/dotvim.git
 
 ```
 aws --profile=tmeintjes s3 ls --summarize --recursive s3://brl-syd/arundo_donax
-
 aws --profile=tmeintjes s3 --dryrun --recursive mv s3://brl-syd/arundo_donax s3://brl-glacier-syd/1day/arundo_donax/
 ```
 
@@ -63,12 +62,14 @@ ceph osd unset noout
 ceph health
 
 ```
+
 # Openstack nova 
 
 ```
 nova list
 nova start sshbounce
 ```
+
 # Docker proxy containers 
 
 These proxies are hosted in containers. The proxies caches apt (squid) and pip (pypi)
@@ -107,7 +108,6 @@ RUN git clone https://github.com/octocat/Hello-World.git
 Used like so
 ```
 docker build -t your-image --build-arg CACHEBUST=$(date +%s) .
-
 ```
 
 For git
@@ -121,10 +121,12 @@ docker build -t myDockerUser/myDockerImage \
 
 # vim-fu
 ## history
+```
 '.
 ''
 g;
 g.
+```
 
 ## General
 
@@ -262,21 +264,22 @@ database. This is usually a lot faster than remaking the database from
 scratch.
 
 For example:
-
-  createdb -O myuser -T myapp myapp2
-  DBNAME=myapp2 django-admin my_script
-  dropdb myapp2
-
+```
+createdb -O myuser -T myapp myapp2
+DBNAME=myapp2 django-admin my_script
+dropdb myapp2
+```
 You can also rename databases with psql:
 
-  echo "alter database myapp rename to myapp_template;" | psql postgres
-
+```
+echo "alter database myapp rename to myapp_template;" | psql postgres
+```
 
 References:
 
-https://www.postgresql.org/docs/9.5/static/app-createdb.html
-https://www.postgresql.org/docs/9.5/static/sql-createdatabase.html
-https://www.postgresql.org/docs/9.5/static/sql-alterdatabase.html
+- https://www.postgresql.org/docs/9.5/static/app-createdb.html
+- https://www.postgresql.org/docs/9.5/static/sql-createdatabase.html
+- https://www.postgresql.org/docs/9.5/static/sql-alterdatabase.html
 
 
 # Sequence filenames regex

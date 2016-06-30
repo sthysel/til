@@ -1,4 +1,5 @@
-# Tagging
+# Git
+## Tagging
 
 ```
 git tag -a v1.4 -m "my version 1.4"
@@ -8,7 +9,7 @@ git push --tags
 
 Tags need to be explicitly pushed.
 
-# Spliting repos appart
+## Spliting repos appart
 
 1. Clone original repo
 1. Remove original origin
@@ -53,6 +54,7 @@ Install specified version, reluctantly.
 ```
 sudo apt-get install lxc-docker=1.9.1 --assume-no
 ```
+
 # Common ceph actions
 
 ```
@@ -116,13 +118,15 @@ docker build -t myDockerUser/myDockerImage \
    --build-arg CACHEBUST=$CACHEBUST \
 
 ```
-# history
+
+# vim-fu
+## history
 '.
 ''
 g;
 g.
 
-# general
+## General
 
 I want to                               | tell vim
 ---                                     | ---
@@ -174,10 +178,9 @@ move cursor line to bottom              | :zb
 
 [2] - Vim uses words that exist in your current buffer and any other buffer you 
      may have open for auto-complete suggestions.
-# til
-Today I learned, and am trying to remember.
 
-# recursive rename
+
+# Recursive rename
 
 ```
 $ find . -name *.txt | xargs rename "s/sums.txt/sums.md5/g"
@@ -189,7 +192,9 @@ Match gene indexi and usage of named groups.
 ```
 $ rename 's/([GATC]{8})_([GATC]{8})/$1-$2/g' *
 ```
-# migrations
+
+# Django
+## migrations
 
 When clearing out old migrations, remeber that the new built-in migration system is 
 only switched on when a "migrations" module exists in the app.
@@ -198,7 +203,7 @@ migrations/__init__.py
 ```
 
 It would have been nice if Django were more explicit with its erorr messages about that...
-# Notes on django import-export
+## django import-export
 
 ## Resource
     * import_data(dataset)
@@ -232,6 +237,10 @@ def dehydrate_lat(self, resource):
         return resource.site.get_lat()
 ```
 
+# Postgres
+
+## Geo Django
+```
 ubuntu@bpa-aws1:/data/puppetmaster/environments/aws$ docker exec -it --user postgres postgis bash
 postgres@postgis:/$ psql bpam                                                                                                                                                                                      
 psql (9.5.2)
@@ -242,6 +251,9 @@ CREATE EXTENSION
 bpam=# create extension postgis_topology;
 CREATE EXTENSION
 bpam=# 
+
+```
+
 Here's a handy PostgreSQL feature for testing things such as migrations,
 data munging scripts, etc.
 
@@ -265,7 +277,9 @@ References:
 https://www.postgresql.org/docs/9.5/static/app-createdb.html
 https://www.postgresql.org/docs/9.5/static/sql-createdatabase.html
 https://www.postgresql.org/docs/9.5/static/sql-alterdatabase.html
-# Sequence filenames
+
+
+# Sequence filenames regex
 
 ```
 (?P<id>\d{4,6})_

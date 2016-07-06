@@ -328,3 +328,11 @@ Mathes
 21675_1_PE_700bp_MM_UNSW_HKL5CBCXX_TAAGGCGA-CTCTCTAT_L002_R1.fastq.gz
 
 ```
+
+# wget
+
+
+```
+wget  -e robots=off -r -nH -nd -np -R index.html* http://au.archive.ubuntu.com/pub/TED-talks/
+
+```

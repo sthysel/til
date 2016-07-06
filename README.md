@@ -27,6 +27,26 @@ git reflog expire --expire=now --all
 git gc --prune=now
 git remote add origin git@github.com:sthysel/dotvim.git
 ```
+
+I sometimes make the mistake of committing git merge conflict markers,
+even though Emacs highlights them in red.
+
+    <<<<<<< e5bb279f8267bf0c33025683a683f891078d5e24
+    =======
+
+    >>>>>>> The commit which is being applied
+
+To avoid this, git comes with a pre-commit hook, but it's not enabled by
+default. To enable it, do this in each of your repos:
+
+    mv .git/hooks/pre-commit.sample .git/hooks/pre-commit
+
+It will also catch extraneous whitespace, which often causes merge
+conflicts.
+
+To temporarily disble the hook, you can use the git commit --no-verify
+option.
+
 # aws cli 
 
 ```

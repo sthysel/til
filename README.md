@@ -53,7 +53,6 @@ option.
 
 # aws cli 
 
-
     aws --profile=tmeintjes s3 ls --summarize --recursive s3://brl-syd/arundo_donax
     aws --profile=tmeintjes s3 --dryrun --recursive mv s3://brl-syd/arundo_donax s3://brl-glacier-syd/1day/arundo_donax/
 
@@ -62,8 +61,6 @@ Command mode (default) needs some escapes at times, "" also works
 
 
     ansible -i inventory.txt dockerhosts -a 'sudo apt-get install -y lxc-docker\=1.9.1'
-
-
 
 The shell module is sometimes more convenient.
 
@@ -89,7 +86,7 @@ Install specified version, reluctantly.
     nova list
     nova start sshbounce
     
-    Remeber about the OS tools container.
+    Remember about the OS tools container.
 
 
 # Docker proxy containers 
@@ -130,7 +127,6 @@ In Dockerfile
 Used like so
 
     docker build -t your-image --build-arg CACHEBUST=$(date +%s) .
-
 
 For git
 
@@ -275,7 +271,7 @@ For some reason dehydrate is also called on import, why ?
     CREATE EXTENSION
     bpam=# 
 
-## 
+## DB working copies for migrations, mungers
 Here's a handy PostgreSQL feature for testing things such as migrations,
 data munging scripts, etc.
 

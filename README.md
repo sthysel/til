@@ -11,13 +11,17 @@ SPC v v s {
 # Git
 ## Tagging
 
-```
-git tag -a v1.4 -m "my version 1.4"
-git push --tags
-```
+
+    git tag -a v1.4 -m "my version 1.4"
+    git push --tags
+
 -a add a new tag
 
-Tags need to be explicitly pushed.
+Tags need to be explicitly pushed unless in .gitconfig:
+
+    [push]
+        followTags = true
+
 
 ## Spliting repos appart
 
@@ -30,55 +34,70 @@ Tags need to be explicitly pushed.
 
 
 Filter recipe example:
-```
-git filter-branch --subdirectory-filter vim -- master
-git for-each-ref --format='delete %(refname)' refs/original | git update-ref --stdin
-git reflog expire --expire=now --all
-git gc --prune=now
-git remote add origin git@github.com:sthysel/dotvim.git
-```
+
+    git filter-branch --subdirectory-filter vim -- master
+    git for-each-ref --format='delete %(refname)' refs/original | git update-ref --stdin
+    git reflog expire --expire=now --all
+    git gc --prune=now
+    git remote add origin git@github.com:sthysel/dotvim.git
+
+
+I sometimes make the mistake of committing git merge conflict markers,
+even though Emacs highlights them in red.
+
+    <<<<<<< e5bb279f8267bf0c33025683a683f891078d5e24
+    =======
+
+    >>>>>>> The commit which is being applied
+
+To avoid this, git comes with a pre-commit hook, but it's not enabled by
+default. To enable it, do this in each of your repos:
+
+    mv .git/hooks/pre-commit.sample .git/hooks/pre-commit
+
+It will also catch extraneous whitespace, which often causes merge
+conflicts.
+
+To temporarily disble the hook, you can use the git commit --no-verify
+option.
+
 # aws cli 
 
-```
-aws --profile=tmeintjes s3 ls --summarize --recursive s3://brl-syd/arundo_donax
-aws --profile=tmeintjes s3 --dryrun --recursive mv s3://brl-syd/arundo_donax s3://brl-glacier-syd/1day/arundo_donax/
-```
+    aws --profile=tmeintjes s3 ls --summarize --recursive s3://brl-syd/arundo_donax
+    aws --profile=tmeintjes s3 --dryrun --recursive mv s3://brl-syd/arundo_donax s3://brl-glacier-syd/1day/arundo_donax/
+
 
 Command mode (default) needs some escapes at times, "" also works
 
-```
-ansible -i inventory.txt dockerhosts -a 'sudo apt-get install -y lxc-docker\=1.9.1'
-```
 
+    ansible -i inventory.txt dockerhosts -a 'sudo apt-get install -y lxc-docker\=1.9.1'
 
 The shell module is sometimes more convenient.
 
-```
-ansible -i inventory.txt dockerhosts -m shell -a 'sudo puppet agent --disable'
-ansible -i inventory.txt dockerhosts -m shell -a 'cd /etc/init.d && for i in docker-*; do echo $i; sudo service $i stop; done'
-```
+    ansible -i inventory.txt dockerhosts -m shell -a 'sudo puppet agent --disable'
+    ansible -i inventory.txt dockerhosts -m shell -a 'cd /etc/init.d && for i in docker-*; do echo $i; sudo service $i stop; done'
+
 # apt-get good practice 
 
 Install specified version, reluctantly.
-```
-sudo apt-get install lxc-docker=1.9.1 --assume-no
-```
+
+    sudo apt-get install lxc-docker=1.9.1 --assume-no
+
 
 # Common ceph actions
 
-```
-ceph osd set noout
-ceph osd unset noout
-ceph health
+    ceph osd set noout
+    ceph osd unset noout
+    ceph health
 
-```
 
 # Openstack nova 
 
-```
-nova list
-nova start sshbounce
-```
+    nova list
+    nova start sshbounce
+    
+    Remember about the OS tools container.
+
 
 # Docker proxy containers 
 
@@ -86,57 +105,56 @@ These proxies are hosted in containers. The proxies caches apt (squid) and pip (
 packages and improves image building time.
 
 ## http squid proxy
-```
- systemctl start squid.service
- systemctl status squid.service
-```
+
+    systemctl start squid.service
+    systemctl status squid.service
+
 
 
 ## devpi pip proxy
-```
- systemctl status devpi.service
- systemctl start devpi.service
-```
 
-```
-$ docker ps                         
-CONTAINER ID        IMAGE                          COMMAND                  CREATED             STATUS              PORTS                                                                          NAMES
-63871f5c9273        muccg/devpi:latest             "/docker-entrypoint.s"   7 minutes ago       Up 7 minutes        0.0.0.0:3141->3141/tcp                                                         devpi.service
-4c9b20ab37ac        muccg/squid-deb-proxy:latest   "/docker-entrypoint.s"   7 minutes ago       Up 7 minutes        0.0.0.0:3128->8000/tcp                                                         squid.service
-```
+    systemctl status devpi.service
+    systemctl start devpi.service
+
+These should run:
+
+    $ docker ps                         
+    CONTAINER ID        IMAGE                          COMMAND                  CREATED             STATUS              PORTS                                                                          NAMES
+    63871f5c9273        muccg/devpi:latest             "/docker-entrypoint.s"   7 minutes ago       Up 7 minutes        0.0.0.0:3141->3141/tcp                                                         devpi.service
+    4c9b20ab37ac        muccg/squid-deb-proxy:latest   "/docker-entrypoint.s"   7 minutes ago       Up 7 minutes        0.0.0.0:3128->8000/tcp                                                         squid.service
+
 
 # Cachebusting to force re-downloads or git clones
 
 A pattern to force the docker cache to be invallid
 
 In Dockerfile
-```
-ARG CACHEBUST=1
-RUN git clone https://github.com/octocat/Hello-World.git
-```
+
+    ARG CACHEBUST=1
+    RUN git clone https://github.com/octocat/Hello-World.git
+
 
 Used like so
-```
-docker build -t your-image --build-arg CACHEBUST=$(date +%s) .
-```
+
+    docker build -t your-image --build-arg CACHEBUST=$(date +%s) .
 
 For git
-```
-export CACHEBUST=$(git ls-remote https://username@bitbucket.org/username/myRepo.git | grep refs/heads/develop | cut -f 1) && echo $CACHEBUST
-docker build -t myDockerUser/myDockerImage \
-   --build-arg blah=blue \
-   --build-arg CACHEBUST=$CACHEBUST \
 
-```
+    export CACHEBUST=$(git ls-remote https://username@bitbucket.org/username/myRepo.git | grep refs/heads/develop | cut -f 1) && echo $CACHEBUST
+    docker build -t myDockerUser/myDockerImage \
+       --build-arg blah=blue \
+       --build-arg CACHEBUST=$CACHEBUST \
+
+
 
 # vim-fu
 ## history
-```
-'.
-''
-g;
-g.
-```
+
+    '.
+    ''
+    g;
+    g.
+
 
 ## General
 
@@ -194,25 +212,24 @@ move cursor line to bottom              | :zb
 
 # Recursive rename
 
-```
-$ find . -name *.txt | xargs rename "s/sums.txt/sums.md5/g"
-```
+    $ find . -name *.txt | xargs rename "s/sums.txt/sums.md5/g"
+
 
 # Perl rename
 Match gene indexi and usage of named groups.
 
-```
-$ rename 's/([GATC]{8})_([GATC]{8})/$1-$2/g' *
-```
+
+    $ rename 's/([GATC]{8})_([GATC]{8})/$1-$2/g' *
+
 
 # Django
 ## migrations
 
 When clearing out old migrations, remeber that the new built-in migration system is 
 only switched on when a "migrations" module exists in the app.
-```
-migrations/__init__.py
-```
+
+    migrations/__init__.py
+
 
 It would have been nice if Django were more explicit with its erorr messages about that...
 ## django import-export
@@ -243,47 +260,45 @@ It would have been nice if Django were more explicit with its erorr messages abo
 
 For some reason dehydrate is also called on import, why ?
 
-```
-def dehydrate_lat(self, resource):
-    if resource.site:
-        return resource.site.get_lat()
-```
+
+    def dehydrate_lat(self, resource):
+        if resource.site:
+            return resource.site.get_lat()
+
 
 # Postgres
 
 ## Geo Django
-```
-ubuntu@bpa-aws1:/data/puppetmaster/environments/aws$ docker exec -it --user postgres postgis bash
-postgres@postgis:/$ psql bpam                                                                                                                                                                                      
-psql (9.5.2)
-Type "help" for help.
 
-bpam=# create extension postgis;
-CREATE EXTENSION
-bpam=# create extension postgis_topology;
-CREATE EXTENSION
-bpam=# 
+    ubuntu@bpa-aws1:/data/puppetmaster/environments/aws$ docker exec -it --user postgres postgis bash
+    postgres@postgis:/$ psql bpam                                                                                                                                                                                      
+    psql (9.5.2)
+    Type "help" for help.
+    
+    bpam=# create extension postgis;
+    CREATE EXTENSION
+    bpam=# create extension postgis_topology;
+    CREATE EXTENSION
+    bpam=# 
 
-```
-
+## DB working copies for migrations, mungers
 Here's a handy PostgreSQL feature for testing things such as migrations,
 data munging scripts, etc.
 
-When you create a new database, it can be created from a template
+When creating a new database, it can be created from a template
 database. This is usually a lot faster than remaking the database from
 scratch.
 
 For example:
-```
-createdb -O myuser -T myapp myapp2
-DBNAME=myapp2 django-admin my_script
-dropdb myapp2
-```
-You can also rename databases with psql:
 
-```
-echo "alter database myapp rename to myapp_template;" | psql postgres
-```
+    createdb -O myuser -T myapp myapp2
+    DBNAME=myapp2 django-admin my_script
+    dropdb myapp2
+
+Rename databases with psql:
+
+    echo "alter database myapp rename to myapp_template;" | psql postgres
+
 
 References:
 
@@ -294,27 +309,30 @@ References:
 
 # Sequence filenames regex
 
-```
-(?P<id>\d{4,6})_
-(?P<extraction>\d)_
-(?P<libary>PE|MP)_
-(?P<size>\d*bp)_
-MM_
-(?P<vendor>AGRF|UNSW)_
-(?P<plate>\w{9})_
-(?P<index>[G|A|T|C|-]*)_
-(?P<lane>L\d{3})_
-(?P<read>R[1|2])\.fastq\.gz
-```
+    (?P<id>\d{4,6})_
+    (?P<extraction>\d)_
+    (?P<libary>PE|MP)_
+    (?P<size>\d*bp)_
+    MM_
+    (?P<vendor>AGRF|UNSW)_
+    (?P<plate>\w{9})_
+    (?P<index>[G|A|T|C|-]*)_
+    (?P<lane>L\d{3})_
+    (?P<read>R[1|2])\.fastq\.gz
 
-Mathes 
 
-```
-21655_1_PE_680bp_MM_AGRF_H3VJJBCXX_GTAGAGGA_L001_R2.fastq.gz
-21655_1_PE_680bp_MM_AGRF_H3VJJBCXX_GTAGAGGA_L002_R1.fastq.gz
-21655_1_PE_680bp_MM_AGRF_H3VJJBCXX_GTAGAGGA_L002_R2.fastq.gz
-21675_1_MP_700bp_MM_UNSW_HKL5CBCXX_TAAGGCGA-CTCTCTAT_L001_R1.fastq.gz
-21675_1_PE_700bp_MM_UNSW_HKL5CBCXX_TAAGGCGA-CTCTCTAT_L001_R2.fastq.gz
-21675_1_PE_700bp_MM_UNSW_HKL5CBCXX_TAAGGCGA-CTCTCTAT_L002_R1.fastq.gz
+Matches 
 
-```
+    21655_1_PE_680bp_MM_AGRF_H3VJJBCXX_GTAGAGGA_L001_R2.fastq.gz
+    21655_1_PE_680bp_MM_AGRF_H3VJJBCXX_GTAGAGGA_L002_R1.fastq.gz
+    21655_1_PE_680bp_MM_AGRF_H3VJJBCXX_GTAGAGGA_L002_R2.fastq.gz
+    21675_1_MP_700bp_MM_UNSW_HKL5CBCXX_TAAGGCGA-CTCTCTAT_L001_R1.fastq.gz
+    21675_1_PE_700bp_MM_UNSW_HKL5CBCXX_TAAGGCGA-CTCTCTAT_L001_R2.fastq.gz
+    21675_1_PE_700bp_MM_UNSW_HKL5CBCXX_TAAGGCGA-CTCTCTAT_L002_R1.fastq.gz
+
+https://regex101.com/r/mP8aI1/2#python
+
+# wget
+
+    wget  -e robots=off -r -nH -nd -np -R index.html* http://au.archive.ubuntu.com/pub/TED-talks/
+
